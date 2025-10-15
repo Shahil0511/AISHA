@@ -10,11 +10,7 @@ async function startServer(): Promise<void> {
     await loaders({ expressApp: app });
 
     app.listen(config.port, () => {
-      Logger.info(`
-################################################
-🛡️  Server listening on port: ${config.port} 🛡️
-################################################
-      `);
+      Logger.info(`🛡️ Server listening on port: ${config.port} 🛡️`);
     }).on('error', (err: Error) => {
       Logger.error('Failed to start server:', err);
       process.exit(1);

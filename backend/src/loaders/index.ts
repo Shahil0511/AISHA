@@ -10,8 +10,7 @@ interface ExpressLoaderOptions {
 
 
 export default async ({ expressApp }: ExpressLoaderOptions) => {
-  const app = express();
-   expressApp.use(express.json());
+  expressApp.use(express.json());
 
   const db = await mongooseLoader();
   Logger.info('✌️ DB loaded and connected');
@@ -19,8 +18,8 @@ export default async ({ expressApp }: ExpressLoaderOptions) => {
   const agenda = jobsLoader({ mongoConnection: db });
   Logger.info('✌️ Agenda loaded');
 
-  await expressLoader({ app });
+  await expressLoader({ app: expressApp });
   Logger.info('✌️ Express loaded');
 
-  return { app, agenda };
+  return { app: expressApp, agenda };
 };
