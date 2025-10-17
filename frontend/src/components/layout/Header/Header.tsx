@@ -28,7 +28,7 @@ export function Header() {
   const handleLogout = () => {
     setIsLoggedIn(false);
   };
-  //git 
+  
 
   return (
     <>
@@ -94,61 +94,62 @@ export function Header() {
             </Button>
 
             {/* Settings Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-gray-300 hover:text-black">
-                  <Settings className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 bg-gray-900 border-gray-700 text-white">
-                {isLoggedIn && (
-                  <>
-                    <div className="flex items-center gap-3 px-2 py-1.5">
-                      <img 
-                        src="/logo.jpg" 
-                        alt="Profile" 
-                        className="h-8 w-8 rounded-full object-cover"
-                      />
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium">Your Account</span>
-                        <span className="text-xs text-gray-400">Manage settings</span>
-                      </div>
-                    </div>
-                    <DropdownMenuSeparator className="bg-gray-700" />
-                  </>
-                )}
-                
-                <DropdownMenuItem className="flex items-center gap-2 text-gray-300 hover:text-white hover:bg-gray-800 focus:bg-gray-800">
-                  <User className="h-4 w-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-                
-                <DropdownMenuItem className="flex items-center gap-2 text-gray-300 hover:text-white hover:bg-gray-800 focus:bg-gray-800">
-                  <Settings className="h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
+        <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button variant="ghost" size="icon" className="text-gray-300 hover:text-black">
+      <Settings className="h-5 w-5" />
+    </Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end" className="w-56 bg-gray-900 border-gray-700 text-white">
+    {isLoggedIn && (
+      <>
+        <div className="flex items-center gap-3 px-2 py-1.5">
+          <img 
+            src="/logo.jpg" 
+            alt="Profile" 
+            className="h-8 w-8 rounded-full object-cover"
+          />
+          <div className="flex flex-col">
+            <span className="text-sm font-medium">Your Account</span>
+            <span className="text-xs text-gray-400">Manage settings</span>
+          </div>
+        </div>
+        <DropdownMenuSeparator className="bg-gray-700" />
+      </>
+    )}
+    
+    <DropdownMenuItem className="flex items-center gap-2 text-gray-300 hover:!text-white hover:bg-gray-800 focus:bg-gray-800">
+      <User className="h-4 w-4 text-inherit" />
+      <span className="text-inherit">Profile</span>
+    </DropdownMenuItem>
+    
+    <DropdownMenuItem className="flex items-center gap-2 text-gray-300 hover:!text-white hover:bg-gray-800 focus:bg-gray-800">
+      <Settings className="h-4 w-4 text-inherit" />
+      <span className="text-inherit">Settings</span>
+    </DropdownMenuItem>
 
-                <DropdownMenuSeparator className="bg-gray-700" />
+    <DropdownMenuSeparator className="bg-gray-700" />
 
-                {isLoggedIn ? (
-                  <DropdownMenuItem 
-                    className="flex items-center gap-2 text-gray-300 hover:text-white hover:bg-gray-800 focus:bg-gray-800"
-                    onClick={handleLogout}
-                  >
-                    <LogOut className="h-4 w-4" />
-                    <span>Logout</span>
-                  </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem 
-                    className="flex items-center gap-2 text-gray-300 hover:text-white hover:bg-gray-800 focus:bg-gray-800"
-                    onClick={handleLoginClick}
-                  >
-                    <User className="h-4 w-4" />
-                    <span>Login</span>
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+    {isLoggedIn ? (
+      <DropdownMenuItem 
+        className="flex items-center gap-2 text-gray-300 hover:!text-white hover:bg-gray-800 focus:bg-gray-800"
+        onClick={handleLogout}
+      >
+        <LogOut className="h-4 w-4 text-inherit" />
+        <span className="text-inherit">Logout</span>
+      </DropdownMenuItem>
+    ) : (
+      <DropdownMenuItem 
+        className="flex items-center gap-2 text-gray-300 hover:!text-white hover:bg-gray-800 focus:bg-gray-800"
+        onClick={handleLoginClick}
+      >
+        <User className="h-4 w-4 text-inherit" />
+        <span className="text-inherit">Login</span>
+      </DropdownMenuItem>
+    )}
+  </DropdownMenuContent>
+</DropdownMenu>
+
 
             {/* Mobile Menu */}
          

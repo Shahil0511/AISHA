@@ -4,8 +4,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { X, Mail, Lock, User as UserIcon, Shield } from "lucide-react";
+import { Mail, Lock, User as UserIcon, Shield } from "lucide-react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 interface AuthModalsProps {
   isLoginOpen: boolean;
@@ -13,6 +14,18 @@ interface AuthModalsProps {
   isSignupOpen: boolean;
   setIsSignupOpen: (open: boolean) => void;
   setIsLoggedIn: (loggedIn: boolean) => void;
+}
+
+interface LoginFormData {
+  email: string;
+  password: string;
+}
+
+interface SignupFormData {
+  name: string;
+  email: string;
+  password: string;
+  otp: string;
 }
 
 export function AuthModals({ 
@@ -24,20 +37,25 @@ export function AuthModals({
 }: AuthModalsProps) {
   const [currentStep, setCurrentStep] = useState<"credentials" | "otp">("credentials");
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
+  const loginForm = useForm<LoginFormData>();
+  const signupForm = useForm<SignupFormData>();
+
+  const handleLogin = (data: LoginFormData) => {
+    console.log("Login data:", data);
     setIsLoggedIn(true);
     setIsLoginOpen(false);
+    loginForm.reset();
   };
 
-  const handleSignup = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSignup = (data: SignupFormData) => {
+    console.log("Signup data:", data);
     if (currentStep === "credentials") {
       setCurrentStep("otp");
     } else {
       setIsLoggedIn(true);
       setIsSignupOpen(false);
       setCurrentStep("credentials");
+      signupForm.reset();
     }
   };
 
@@ -45,18 +63,35 @@ export function AuthModals({
     setIsLoginOpen(false);
     setCurrentStep("credentials");
     setIsSignupOpen(true);
+    loginForm.reset();
   };
 
   const switchToLogin = () => {
     setIsSignupOpen(false);
     setCurrentStep("credentials");
     setIsLoginOpen(true);
+    signupForm.reset();
+  };
+
+  const handleCloseSignup = (open: boolean) => {
+    setIsSignupOpen(open);
+    if (!open) {
+      setCurrentStep("credentials");
+      signupForm.reset();
+    }
+  };
+
+  const handleCloseLogin = (open: boolean) => {
+    setIsLoginOpen(open);
+    if (!open) {
+      loginForm.reset();
+    }
   };
 
   return (
     <>
       {/* Login Modal */}
-      <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
+      <Dialog open={isLoginOpen} onOpenChange={handleCloseLogin}>
         <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-white">Login to AI SHA</DialogTitle>
@@ -65,7 +100,7 @@ export function AuthModals({
             </DialogDescription>
           </DialogHeader>
           
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="login-email" className="text-gray-300">Email or Phone Number</Label>
               <div className="relative">
@@ -76,6 +111,7 @@ export function AuthModals({
                   placeholder="Enter email or phone number"
                   className="pl-10 bg-gray-800 border-gray-600 text-white"
                   required
+                  {...loginForm.register("email", { required: true })}
                 />
               </div>
             </div>
@@ -90,6 +126,7 @@ export function AuthModals({
                   placeholder="Enter your password"
                   className="pl-10 bg-gray-800 border-gray-600 text-white"
                   required
+                  {...loginForm.register("password", { required: true })}
                 />
               </div>
             </div>
@@ -108,10 +145,7 @@ export function AuthModals({
       </Dialog>
 
       {/* Signup Modal */}
-      <Dialog open={isSignupOpen} onOpenChange={(open) => {
-        setIsSignupOpen(open);
-        if (!open) setCurrentStep("credentials");
-      }}>
+      <Dialog open={isSignupOpen} onOpenChange={handleCloseSignup}>
         <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-white">
@@ -125,7 +159,7 @@ export function AuthModals({
             </DialogDescription>
           </DialogHeader>
           
-          <form onSubmit={handleSignup} className="space-y-4">
+          <form onSubmit={signupForm.handleSubmit(handleSignup)} className="space-y-4">
             {currentStep === "credentials" ? (
               <>
                 <div className="space-y-2">
@@ -138,6 +172,7 @@ export function AuthModals({
                       placeholder="Enter your full name"
                       className="pl-10 bg-gray-800 border-gray-600 text-white"
                       required
+                      {...signupForm.register("name", { required: true })}
                     />
                   </div>
                 </div>
@@ -152,6 +187,7 @@ export function AuthModals({
                       placeholder="Enter email or phone number"
                       className="pl-10 bg-gray-800 border-gray-600 text-white"
                       required
+                      {...signupForm.register("email", { required: true })}
                     />
                   </div>
                 </div>
@@ -166,12 +202,13 @@ export function AuthModals({
                       placeholder="Create a password"
                       className="pl-10 bg-gray-800 border-gray-600 text-white"
                       required
+                      {...signupForm.register("password", { required: true })}
                     />
                   </div>
                 </div>
               </>
             ) : (
-              <OtpStep />
+              <OtpStep register={signupForm.register} />
             )}
 
             <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600">
@@ -192,7 +229,11 @@ export function AuthModals({
   );
 }
 
-function OtpStep() {
+interface OtpStepProps {
+  register: any;
+}
+
+function OtpStep({ register }: OtpStepProps) {
   return (
     <>
       <div className="text-center mb-4">
@@ -212,12 +253,13 @@ function OtpStep() {
             className="pl-10 bg-gray-800 border-gray-600 text-white text-center text-lg tracking-widest"
             maxLength={6}
             required
+            {...register("otp", { required: true, minLength: 6, maxLength: 6 })}
           />
         </div>
       </div>
 
       <p className="text-sm text-gray-400 text-center">
-        Didn't receive OTP? <Button variant="link" className="text-blue-400 p-0 h-auto">Resend</Button>
+        Didn't receive OTP? <Button variant="link" type="button" className="text-blue-400 p-0 h-auto">Resend</Button>
       </p>
     </>
   );
