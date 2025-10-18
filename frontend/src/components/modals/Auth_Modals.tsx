@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Mail, Lock, User as UserIcon, Shield } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { LoginFormData, SignupFormData } from "@/types/auth";
+import { useSignupMutation } from "@/features/auth/api/authApi";
 
 interface AuthModalsProps {
   isLoginOpen: boolean;
@@ -16,17 +18,7 @@ interface AuthModalsProps {
   setIsLoggedIn: (loggedIn: boolean) => void;
 }
 
-interface LoginFormData {
-  email: string;
-  password: string;
-}
 
-interface SignupFormData {
-  name: string;
-  email: string;
-  password: string;
-  otp: string;
-}
 
 export function AuthModals({ 
   isLoginOpen, 
@@ -40,6 +32,8 @@ export function AuthModals({
   const loginForm = useForm<LoginFormData>();
   const signupForm = useForm<SignupFormData>();
 
+  const [signup] = useSignupMutation();
+
   const handleLogin = (data: LoginFormData) => {
     console.log("Login data:", data);
     setIsLoggedIn(true);
@@ -47,17 +41,27 @@ export function AuthModals({
     loginForm.reset();
   };
 
-  const handleSignup = (data: SignupFormData) => {
-    console.log("Signup data:", data);
-    if (currentStep === "credentials") {
-      setCurrentStep("otp");
-    } else {
+const handleSignup = async (data: SignupFormData) => {
+   console.log("Data sending to server:", data);
+  if (currentStep === "credentials") {
+    setCurrentStep("otp");
+  } else {
+    try {
+      const response = await signup({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      }).unwrap();
+      console.log("Signup success:", response);
       setIsLoggedIn(true);
       setIsSignupOpen(false);
       setCurrentStep("credentials");
       signupForm.reset();
+    } catch (error: any) {
+      console.error("Signup failed:", error.data?.message || error.message);
     }
-  };
+  }
+};
 
   const switchToSignup = () => {
     setIsLoginOpen(false);
