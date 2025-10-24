@@ -3,7 +3,6 @@ import config from "../config/index.js";
 import path from "path";
 import fs from "fs";
 
-// Ensure logs directory exists
 const logDir = "logs";
 if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir);
@@ -11,7 +10,6 @@ if (!fs.existsSync(logDir)) {
 
 const transports: winston.transport[] = [];
 
-// Console logging (pretty in dev, JSON in prod)
 transports.push(
   new winston.transports.Console({
     format:
@@ -24,7 +22,6 @@ transports.push(
   })
 );
 
-// ✅ File logging
 transports.push(
   new winston.transports.File({
     filename: path.join(logDir, "app.log"),
