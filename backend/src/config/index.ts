@@ -1,48 +1,49 @@
-import dotenv from 'dotenv';
-import process from 'process';
+import dotenv from "dotenv";
+import process from "process";
+import { envSchema } from "./validation.js";
 
-// Set the NODE_ENV to 'development' by default
-process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+// Set default NODE_ENV
+process.env.NODE_ENV = process.env.NODE_ENV || "development";
 
-// Load the correct .env file based on NODE_ENV
+// Load correct .env file
 const envFile = `.env.${process.env.NODE_ENV}`;
 const envFound = dotenv.config({ path: envFile });
 
 if (envFound.error) {
-  throw new Error("⚠️  Couldn't find .env file  ⚠️");
+  throw new Error("⚠️ Couldn't find .env file ⚠️");
 }
 
-// Validate required environment variables
-const requiredEnvVars = ['MONGODB_URI', 'JWT_SECRET'];
-const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
-
-if (missingEnvVars.length > 0) {
-  throw new Error(`⚠️  Missing required environment variables: ${missingEnvVars.join(', ')}  ⚠️`);
+// Validate using Zod
+const parsed = envSchema.safeParse(process.env);
+if (!parsed.success) {
+  console.error("❌ Invalid environment variables:", parsed.error.format());
+  process.exit(1);
 }
 
+// ✅ Use the validated parsed.data, not process.env
 export default {
-  port: parseInt(process.env.PORT ?? '5001', 10),
-  databaseURL: process.env.MONGODB_URI!,
-  jwtSecret: process.env.JWT_SECRET!,
-  jwtAlgorithm: process.env.JWT_ALGO || 'HS256',
+  port: parsed.data.PORT,
+  databaseURL: parsed.data.MONGODB_URI,
+  jwtSecret: parsed.data.JWT_SECRET,
+  jwtAlgorithm: parsed.data.JWT_ALGO,
   logs: {
-    level: process.env.LOG_LEVEL || 'info',
+    level: parsed.data.LOG_LEVEL,
   },
   agenda: {
-    dbCollection: process.env.AGENDA_DB_COLLECTION || 'agendaJobs',
-    pooltime: process.env.AGENDA_POOL_TIME || '10 seconds',
-    concurrency: parseInt(process.env.AGENDA_CONCURRENCY ?? '5', 10),
+    dbCollection: parsed.data.AGENDA_DB_COLLECTION,
+    pooltime: parsed.data.AGENDA_POOL_TIME,
+    concurrency: parsed.data.AGENDA_CONCURRENCY,
   },
   agendash: {
-    user: process.env.AGENDASH_USER || 'agendash',
-    password: process.env.AGENDASH_PASS || '123456',
+    user: parsed.data.AGENDASH_USER,
+    password: parsed.data.AGENDASH_PASS,
   },
   api: {
-    prefix: '/api',
+    prefix: "/api",
   },
   emails: {
-    apiKey: process.env.MAILGUN_API_KEY || '',
-    apiUsername: process.env.MAILGUN_USERNAME || '',
-    domain: process.env.MAILGUN_DOMAIN || '',
+    apiKey: parsed.data.MAILGUN_API_KEY,
+    apiUsername: parsed.data.MAILGUN_USERNAME,
+    domain: parsed.data.MAILGUN_DOMAIN,
   },
-};
+} as const;
