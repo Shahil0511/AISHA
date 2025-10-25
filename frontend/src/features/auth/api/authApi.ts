@@ -37,20 +37,6 @@ export const authApi = createApi({
   baseQuery,
   tagTypes: ["Auth"],
   endpoints: (builder) => ({
-    signup: builder.mutation<AuthResponse, SignupPayload>({
-      query: (data) => ({
-        url: "/signup",
-        method: "POST",
-        body: data,
-      }),
-      transformResponse: (response: AuthResponse) => {
-        if (process.env.NODE_ENV === "development") {
-          console.log("Signup response:", response);
-        }
-        return response;
-      },
-    }),
-
     login: builder.mutation<AuthResponse, LoginPayload>({
       query: (data) => ({
         url: "/login",
@@ -64,7 +50,24 @@ export const authApi = createApi({
         return response;
       },
     }),
+
+    requestOtp: builder.mutation<{ message: string }, SignupPayload>({
+      query: (data) => ({
+        url: "/signup/request-otp",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
+    verifyOtp: builder.mutation<AuthResponse, { email: string; otp: string }>({
+      query: (data) => ({
+        url: "/signup/verify-otp",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useSignupMutation, useLoginMutation } = authApi;
+export const { useLoginMutation, useRequestOtpMutation, useVerifyOtpMutation } =
+  authApi;

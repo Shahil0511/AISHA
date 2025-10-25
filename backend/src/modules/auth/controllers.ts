@@ -1,34 +1,45 @@
 import type { Request, Response } from "express";
-import { loginSchema, signupSchema } from "./schema.js";
-
+import { loginSchema, requestOtpSchema, verifyOtpSchema } from "./schema.js";
 import { AuthServices } from "./service.js";
 import Logger from "../../loaders/logger.js";
 
 export class AuthController {
-  static async signup(req: Request, res: Response) {
+  // Signup request -> send OTP (using Redis, no DB)
+  static async requestOtp(req: Request, res: Response) {
     try {
-      console.log("route hit");
-      const validateData = signupSchema.parse(req.body);
-      const { token, user } = await AuthServices.signup(validateData);
-      Logger.info(`User registered :${user.email}`);
-      return res.status(201).json({ token, user });
+      const data = requestOtpSchema.parse(req.body);
+      await AuthServices.sendOtp(data); // Redis handles OTP storage
+      Logger.info(`OTP sent to: ${data.email}`);
+      return res.status(200).json({ message: "OTP sent successfully" });
     } catch (error: any) {
-      Logger.error("Signup error:", error.message);
-      const message = error.errors ? error.errors : error.message;
-      return res.status(400).json({ message });
+      Logger.error("Request OTP error:", error.message);
+      return res.status(400).json({ message: error.errors || error.message });
     }
   }
 
+  // Verify OTP & create user (no DB OTP)
+  static async verifyOtp(req: Request, res: Response) {
+    try {
+      const data = verifyOtpSchema.parse(req.body);
+      const { token, user } = await AuthServices.verifyOtpAndSignup(data); // Uses Redis
+      Logger.info(`User registered: ${user.email}`);
+      return res.status(201).json({ token, user });
+    } catch (error: any) {
+      Logger.error("Verify OTP error:", error.message);
+      return res.status(400).json({ message: error.errors || error.message });
+    }
+  }
+
+  // Login
   static async login(req: Request, res: Response) {
     try {
-      const validateData = loginSchema.parse(req.body);
-      const { token, user } = await AuthServices.login(validateData);
-      Logger.info(`User Logged in ${user.email}`);
+      const data = loginSchema.parse(req.body);
+      const { token, user } = await AuthServices.login(data);
+      Logger.info(`User logged in: ${user.email}`);
       return res.status(200).json({ token, user });
     } catch (error: any) {
       Logger.error("Login error:", error.message);
-      const message = error.errors ? error.errors : error.message;
-      return res.status(400).json({ message });
+      return res.status(400).json({ message: error.errors || error.message });
     }
   }
 }
