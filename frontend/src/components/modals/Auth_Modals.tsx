@@ -27,7 +27,7 @@ export function AuthModals({
   setIsSignupOpen, 
   setIsLoggedIn 
 }: AuthModalsProps) {
-  const [currentStep, setCurrentStep] = useState<"credentials" | "otp">("credentials");
+  // const [currentStep, setCurrentStep] = useState<"credentials" | "otp">("credentials");
 
   const loginForm = useForm<LoginFormData>();
   const signupForm = useForm<SignupFormData>();
@@ -42,10 +42,10 @@ export function AuthModals({
   };
 
 const handleSignup = async (data: SignupFormData) => {
-   console.log("Data sending to server:", data);
-  if (currentStep === "credentials") {
-    setCurrentStep("otp");
-  } else {
+     console.log("Calling signup with:", data); 
+  // if (currentStep === "credentials") {
+  //   setCurrentStep("otp");
+  // } else {
     try {
       const response = await signup({
         name: data.name,
@@ -55,24 +55,24 @@ const handleSignup = async (data: SignupFormData) => {
       console.log("Signup success:", response);
       setIsLoggedIn(true);
       setIsSignupOpen(false);
-      setCurrentStep("credentials");
+      // setCurrentStep("credentials");
       signupForm.reset();
     } catch (error: any) {
       console.error("Signup failed:", error.data?.message || error.message);
     }
-  }
+  // }
 };
 
   const switchToSignup = () => {
     setIsLoginOpen(false);
-    setCurrentStep("credentials");
+    // setCurrentStep("credentials");
     setIsSignupOpen(true);
     loginForm.reset();
   };
 
   const switchToLogin = () => {
     setIsSignupOpen(false);
-    setCurrentStep("credentials");
+    // setCurrentStep("credentials");
     setIsLoginOpen(true);
     signupForm.reset();
   };
@@ -80,7 +80,7 @@ const handleSignup = async (data: SignupFormData) => {
   const handleCloseSignup = (open: boolean) => {
     setIsSignupOpen(open);
     if (!open) {
-      setCurrentStep("credentials");
+      // setCurrentStep("credentials");
       signupForm.reset();
     }
   };
@@ -153,18 +153,18 @@ const handleSignup = async (data: SignupFormData) => {
         <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-white">
-              {currentStep === "credentials" ? "Create Account" : "Verify Your Account"}
+              {/* {currentStep === "credentials" ? "Create Account" : "Verify Your Account"} */} Create account
             </DialogTitle>
             <DialogDescription className="text-gray-400">
-              {currentStep === "credentials" 
+              {/* {currentStep === "credentials" 
                 ? "Fill in your details to create a new account" 
                 : "Enter the OTP sent to your email/phone"
-              }
+              } */}Fill in your details to create a new account
             </DialogDescription>
           </DialogHeader>
           
           <form onSubmit={signupForm.handleSubmit(handleSignup)} className="space-y-4">
-            {currentStep === "credentials" ? (
+            {/* {currentStep === "credentials" ? ( */}
               <>
                 <div className="space-y-2">
                   <Label htmlFor="signup-name" className="text-gray-300">Full Name</Label>
@@ -211,21 +211,22 @@ const handleSignup = async (data: SignupFormData) => {
                   </div>
                 </div>
               </>
-            ) : (
+            {/* ) : (
               <OtpStep register={signupForm.register} />
-            )}
+            )} */}
 
             <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600">
-              {currentStep === "credentials" ? "Continue" : "Verify & Create Account"}
+              {/* {currentStep === "credentials" ? "Continue" : "Verify & Create Account"} */}
+              signup
             </Button>
 
-            {currentStep === "credentials" && (
+            {/* {currentStep === "credentials" && ( */}
               <div className="text-center">
                 <Button variant="link" type="button" onClick={switchToLogin} className="text-blue-400">
                   Already have an account? Login
                 </Button>
               </div>
-            )}
+            {/* )} */}
           </form>
         </DialogContent>
       </Dialog>

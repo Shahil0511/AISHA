@@ -1,9 +1,8 @@
-import * as AgendaImport from 'agenda';
-import { Db } from 'mongodb';
-import config from '../config/index.js';
+import * as AgendaImport from "agenda";
+import { Db } from "mongodb";
+import config from "../config/index.js";
 
-
-const Agenda: any = AgendaImport.default; // <-- cast to any to allow `new`
+const Agenda: any = AgendaImport.default;
 
 interface JobsLoaderOptions {
   mongoConnection: Db;
