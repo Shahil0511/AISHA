@@ -44,7 +44,7 @@ const userSchema = new Schema<IUserDocument>(
       type: String,
       required: [true, "Password is required"],
       minlength: 6,
-      select: false, // don't return password
+      select: false,
     },
   },
   {

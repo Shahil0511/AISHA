@@ -21,8 +21,9 @@ export class AuthController {
   static async verifyOtp(req: Request, res: Response) {
     try {
       const data = verifyOtpSchema.parse(req.body);
-      const { token, user } = await AuthServices.verifyOtpAndSignup(data); // Uses Redis
+      const { token, user } = await AuthServices.verifyOtpAndSignup(data);
       Logger.info(`User registered: ${user.email}`);
+
       return res.status(201).json({ token, user });
     } catch (error: any) {
       Logger.error("Verify OTP error:", error.message);
@@ -30,16 +31,17 @@ export class AuthController {
     }
   }
 
-  // Login
   static async login(req: Request, res: Response) {
     try {
       const data = loginSchema.parse(req.body);
+
       const { token, user } = await AuthServices.login(data);
-      Logger.info(`User logged in: ${user.email}`);
       return res.status(200).json({ token, user });
-    } catch (error: any) {
-      Logger.error("Login error:", error.message);
-      return res.status(400).json({ message: error.errors || error.message });
+    } catch (zodError: any) {
+      console.error("❌ Zod validation failed:", zodError);
+      return res
+        .status(400)
+        .json({ message: zodError.errors || zodError.message });
     }
   }
 }

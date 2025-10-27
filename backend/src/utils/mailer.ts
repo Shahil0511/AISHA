@@ -9,12 +9,6 @@ export const mailer = nodemailer.createTransport({
     pass: process.env.SMTP_PASS,
   },
 });
-console.log("📨 SMTP ENV:", {
-  host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
-  user: process.env.SMTP_USER,
-  pass: process.env.SMTP_PASS ? "********" : "❌ missing",
-});
 
 export async function sendOtpEmail(email: string, otp: string) {
   const mailOption = {

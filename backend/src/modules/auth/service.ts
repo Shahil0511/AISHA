@@ -45,12 +45,11 @@ export class AuthServices {
     if (record.otp !== data.otp) throw new Error("Invalid OTP");
 
     // Hash password and create user
-    const hashedPassword = await bcrypt.hash(record.password, 12);
-
+    // ✅ NEW
     const user = await UserModel.create({
       name: record.name,
       email: data.email,
-      password: hashedPassword,
+      password: record.password, // plain password — Mongoose will hash it
     });
 
     await redisClient.del(redisKey);
@@ -67,10 +66,14 @@ export class AuthServices {
   static async login(
     data: LoginInput
   ): Promise<{ token: string; user: IUserDocument }> {
-    const user = await UserModel.findOne({ email: data.email });
-    if (!user) throw new Error("Invalid credentials");
+    const user = await UserModel.findOne({ email: data.email }).select(
+      "+password"
+    );
+
+    if (!user || !user.password) throw new Error("Invalid credentials");
 
     const isMatch = await bcrypt.compare(data.password, user.password);
+
     if (!isMatch) throw new Error("Invalid credentials");
 
     const token = jwt.sign({ id: user._id }, config.jwtSecret, {

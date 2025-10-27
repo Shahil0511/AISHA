@@ -15,10 +15,10 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { LoginFormData, SignupFormData } from "@/types/auth";
 import {
-  useSignupMutation,
+  useLoginMutation,
   useRequestOtpMutation,
   useVerifyOtpMutation,
-} from "@/features/auth/api/authApi";
+} from "@/features/auth/authApi";
 
 interface AuthModalsProps {
   isLoginOpen: boolean;
@@ -45,6 +45,8 @@ export function AuthModals({
   const [requestOtp] = useRequestOtpMutation();
   const [verifyOtp] = useVerifyOtpMutation();
 
+  const [login, { isLoading: loginLoading }] = useLoginMutation();
+
   const [canResend, setCanResend] = useState(false);
   const [resendTimer, setResendTimer] = useState(25);
 
@@ -65,48 +67,34 @@ export function AuthModals({
     return () => clearInterval(timer);
   }, [currentStep, canResend]);
 
-  const handleLogin = (data: LoginFormData) => {
-    console.log("Login data:", data);
-    setIsLoggedIn(true);
-    setIsLoginOpen(false);
-    loginForm.reset();
+  const handleLogin = async (data: LoginFormData) => {
+    try {
+      await login(data).unwrap(); // ✅ only once
+      setIsLoggedIn(true);
+      setIsLoginOpen(false);
+      loginForm.reset();
+    } catch (err: any) {
+      console.error("❌ Login failed:", err);
+    }
   };
 
   const handleSignup = async (data: SignupFormData) => {
-    console.log("Calling signup with:", data);
     if (currentStep === "credentials") {
       try {
-        await requestOtp({
-          name: data.name,
-          email: data.email,
-          password: data.password,
-        }).unwrap();
-
-        console.log("OTP sent successfully");
+        await requestOtp(data).unwrap();
         setCurrentStep("otp");
-      } catch (error: any) {
-        console.error(
-          "Failed to send OTP:",
-          error.data?.message || error.message
-        );
+      } catch (err: any) {
+        console.error("❌ OTP request failed:", err);
       }
     } else {
       try {
-        const response = await verifyOtp({
-          email: data.email,
-          otp: data.otp,
-        }).unwrap();
-
-        console.log("Signup success:", response);
+        await verifyOtp({ email: data.email, otp: data.otp }).unwrap(); // ✅ only once
         setIsLoggedIn(true);
         setIsSignupOpen(false);
         signupForm.reset();
         setCurrentStep("credentials");
-      } catch (error: any) {
-        console.error(
-          "OTP verification failed:",
-          error.data?.message || error.message
-        );
+      } catch (err: any) {
+        console.error("❌ OTP verification failed:", err);
       }
     }
   };
@@ -121,7 +109,6 @@ export function AuthModals({
       await requestOtp({ name, email, password }).unwrap();
       setCanResend(false);
       setResendTimer(25);
-      console.log("OTP resent successfully");
     } catch (error: any) {
       console.error(
         "Failed to resend OTP:",
