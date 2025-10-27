@@ -1,14 +1,17 @@
 import dotenv from "dotenv";
 import process from "process";
+import path from "path";
 import { envSchema } from "./validation.js";
 
-// Set default NODE_ENV
+// Set NODE_ENV default
 process.env.NODE_ENV = process.env.NODE_ENV || "development";
 
-// Load correct .env file
-const envFile = `.env.${process.env.NODE_ENV}`;
-const envFound = dotenv.config({ path: envFile });
+// Resolve .env file path from project root
+const envFile = path.resolve(process.cwd(), `.env.${process.env.NODE_ENV}`);
+console.log("🌍 Loading env file:", envFile);
 
+// Load environment variables
+const envFound = dotenv.config({ path: envFile });
 if (envFound.error) {
   throw new Error("⚠️ Couldn't find .env file ⚠️");
 }
@@ -20,7 +23,7 @@ if (!parsed.success) {
   process.exit(1);
 }
 
-// ✅ Use the validated parsed.data, not process.env
+// ✅ Export validated config
 export default {
   port: parsed.data.PORT,
   databaseURL: parsed.data.MONGODB_URI,
@@ -46,4 +49,12 @@ export default {
     apiUsername: parsed.data.MAILGUN_USERNAME,
     domain: parsed.data.MAILGUN_DOMAIN,
   },
+  redisUrl: parsed.data.REDIS_URL,
+  smtp: {
+    host: parsed.data.SMTP_HOST,
+    port: parsed.data.SMTP_PORT,
+    user: parsed.data.SMTP_USER,
+    pass: parsed.data.SMTP_PASS,
+  },
+  otpExpiresInMin: parsed.data.OTP_EXPIRES_IN_MIN,
 } as const;

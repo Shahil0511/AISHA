@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config({ path: `.env.${process.env.NODE_ENV || "development"}` });
+
 import config from "./config/index.js";
 import Logger from "./loaders/logger.js";
 import createApp from "./app.js";
