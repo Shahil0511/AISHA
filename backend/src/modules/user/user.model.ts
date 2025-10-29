@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
-import type { IUserDocument, IUserModel } from "../../interfaces/index.js";
+import type { IUserDocument, IUserModel } from "../../interfaces/IUser.js";
 
 const SALT_ROUNDS = 10;
 

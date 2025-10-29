@@ -10,7 +10,7 @@ import type {
 import { sendOtpEmail } from "../../utils/mailer.js";
 import redisClient from "../../config/redis.js";
 
-import type { IAuthResponse } from "../../interfaces/index.js";
+import type { IAuthResponse } from "../../interfaces/IAuth.js";
 
 const JWT_EXPIRES_IN = "7d";
 const OTP_EXPIRES_IN_MIN = Number(process.env.OTP_EXPIRES_IN_MIN || 10);
