@@ -19,13 +19,14 @@ import {
   useRequestOtpMutation,
   useVerifyOtpMutation,
 } from "@/features/auth/authApi";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "@/features/auth/authSlice";
 
 interface AuthModalsProps {
   isLoginOpen: boolean;
   setIsLoginOpen: (open: boolean) => void;
   isSignupOpen: boolean;
   setIsSignupOpen: (open: boolean) => void;
-  setIsLoggedIn: (loggedIn: boolean) => void;
 }
 
 export function AuthModals({
@@ -33,7 +34,6 @@ export function AuthModals({
   setIsLoginOpen,
   isSignupOpen,
   setIsSignupOpen,
-  setIsLoggedIn,
 }: AuthModalsProps) {
   const [currentStep, setCurrentStep] = useState<"credentials" | "otp">(
     "credentials"
@@ -49,6 +49,8 @@ export function AuthModals({
 
   const [canResend, setCanResend] = useState(false);
   const [resendTimer, setResendTimer] = useState(25);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -69,8 +71,8 @@ export function AuthModals({
 
   const handleLogin = async (data: LoginFormData) => {
     try {
-      await login(data).unwrap(); // ✅ only once
-      setIsLoggedIn(true);
+      const result = await login(data).unwrap();
+      dispatch(setCredentials({ user: result.user, token: result.token }));
       setIsLoginOpen(false);
       loginForm.reset();
     } catch (err: any) {
@@ -88,8 +90,11 @@ export function AuthModals({
       }
     } else {
       try {
-        await verifyOtp({ email: data.email, otp: data.otp }).unwrap(); // ✅ only once
-        setIsLoggedIn(true);
+        const result = await verifyOtp({
+          email: data.email,
+          otp: data.otp,
+        }).unwrap();
+        dispatch(setCredentials({ user: result.user, token: result.token }));
         setIsSignupOpen(false);
         signupForm.reset();
         setCurrentStep("credentials");
