@@ -1,0 +1,87 @@
+.
+├── backend
+│   ├── logs
+│   │   └── app.log
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── src
+│   │   ├── app.ts
+│   │   ├── config
+│   │   │   ├── index.ts
+│   │   │   ├── redis.ts
+│   │   │   └── validation.ts
+│   │   ├── interfaces
+│   │   │   ├── IApiResponse.ts
+│   │   │   ├── IAuth.ts
+│   │   │   ├── IError.ts
+│   │   │   ├── IJob.ts
+│   │   │   ├── index.ts
+│   │   │   └── IUser.ts
+│   │   ├── jobs
+│   │   ├── loaders
+│   │   │   ├── agenda.ts
+│   │   │   ├── dependencyInjector.ts
+│   │   │   ├── express.ts
+│   │   │   ├── index.ts
+│   │   │   ├── logger.ts
+│   │   │   └── mongoose.ts
+│   │   ├── middleware
+│   │   │   ├── auth.middleware.ts
+│   │   │   ├── error.middleware.ts
+│   │   │   └── requestLogger.middlewares.ts
+│   │   ├── modules
+│   │   │   ├── auth
+│   │   │   └── user
+│   │   ├── server.ts
+│   │   ├── tests
+│   │   ├── types
+│   │   └── utils
+│   │       └── mailer.ts
+│   └── tsconfig.json
+├── frontend
+│   ├── components.json
+│   ├── eslint.config.mjs
+│   ├── .gitignore
+│   ├── next.config.ts
+│   ├── next-env.d.ts
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── postcss.config.mjs
+│   ├── public
+│   │   ├── file.svg
+│   │   ├── globe.svg
+│   │   ├── logo.jpg
+│   │   ├── next.svg
+│   │   ├── vercel.svg
+│   │   └── window.svg
+│   ├── README.md
+│   ├── src
+│   │   ├── app
+│   │   │   ├── favicon.ico
+│   │   │   ├── globals.css
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx
+│   │   ├── components
+│   │   │   ├── layout
+│   │   │   ├── modals
+│   │   │   └── ui
+│   │   ├── features
+│   │   │   ├── auth
+│   │   │   ├── dev
+│   │   │   ├── projects
+│   │   │   ├── qa
+│   │   │   └── users
+│   │   ├── lib
+│   │   │   └── utils.ts
+│   │   ├── pages
+│   │   ├── services
+│   │   ├── store
+│   │   │   ├── hooks.ts
+│   │   │   └── store.ts
+│   │   └── types
+│   │       └── auth.ts
+│   └── tsconfig.json
+├── .gitignore
+└── project-structure.txt
+
+34 directories, 51 files

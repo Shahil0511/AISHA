@@ -1,6 +1,10 @@
 import type { Request, Response } from "express";
-import { loginSchema, requestOtpSchema, verifyOtpSchema } from "./schema.js";
-import { AuthServices } from "./service.js";
+import {
+  loginSchema,
+  requestOtpSchema,
+  verifyOtpSchema,
+} from "./auth.schema.js";
+import { AuthServices } from "./auth.service.js";
 import Logger from "../../loaders/logger.js";
 
 export class AuthController {

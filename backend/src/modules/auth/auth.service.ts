@@ -1,17 +1,23 @@
-import UserModel, { type IUserDocument } from "./authModel.js";
+import UserModel from "../user/user.model.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import config from "../../config/index.js";
-import type { LoginInput, RequestOtpInput, VerifyOtpInput } from "./schema.js";
+import type {
+  LoginInput,
+  RequestOtpInput,
+  VerifyOtpInput,
+} from "./auth.schema.js";
 import { sendOtpEmail } from "../../utils/mailer.js";
 import redisClient from "../../config/redis.js";
+
+import type { IAuthResponse } from "../../interfaces/index.js";
 
 const JWT_EXPIRES_IN = "7d";
 const OTP_EXPIRES_IN_MIN = Number(process.env.OTP_EXPIRES_IN_MIN || 10);
 
 export class AuthServices {
   // Send OTP for signup
-  static async sendOtp(data: RequestOtpInput) {
+  static async sendOtp(data: RequestOtpInput): Promise<void> {
     const existing = await UserModel.findOne({ email: data.email });
     if (existing) throw new Error("User already exists");
 
@@ -35,7 +41,7 @@ export class AuthServices {
   // Verify OTP and create user
   static async verifyOtpAndSignup(
     data: VerifyOtpInput
-  ): Promise<{ token: string; user: IUserDocument }> {
+  ): Promise<IAuthResponse> {
     const redisKey = `otp:${data.email}`;
     const recordStr = await redisClient.get(redisKey);
 
@@ -44,12 +50,10 @@ export class AuthServices {
     const record = JSON.parse(recordStr);
     if (record.otp !== data.otp) throw new Error("Invalid OTP");
 
-    // Hash password and create user
-    // ✅ NEW
     const user = await UserModel.create({
       name: record.name,
       email: data.email,
-      password: record.password, // plain password — Mongoose will hash it
+      password: record.password,
     });
 
     await redisClient.del(redisKey);
@@ -63,17 +67,13 @@ export class AuthServices {
   }
 
   // Login
-  static async login(
-    data: LoginInput
-  ): Promise<{ token: string; user: IUserDocument }> {
+  static async login(data: LoginInput): Promise<IAuthResponse> {
     const user = await UserModel.findOne({ email: data.email }).select(
       "+password"
     );
-
     if (!user || !user.password) throw new Error("Invalid credentials");
 
     const isMatch = await bcrypt.compare(data.password, user.password);
-
     if (!isMatch) throw new Error("Invalid credentials");
 
     const token = jwt.sign({ id: user._id }, config.jwtSecret, {

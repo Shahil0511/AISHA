@@ -5,7 +5,7 @@ import express, {
   type Response,
 } from "express";
 import loaders from "./loaders/index.js";
-import authRoutes from "./modules/auth/routes.js";
+import authRoutes from "./modules/auth/auth.routes.js";
 import Logger from "./loaders/logger.js";
 
 async function createApp(): Promise<Application> {

@@ -32,7 +32,7 @@ const baseQuery = fetchBaseQuery({
     return headers;
   },
   validateStatus: (response) =>
-    response.status === 200 || response.status === 201, // ✅ accept 200 & 201 responses
+    response.status === 200 || response.status === 201,
 });
 
 // ⚡ Create RTK Query API slice
