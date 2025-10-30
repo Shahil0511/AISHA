@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
-import type { IUserDocument, IUserModel } from "../../interfaces/IUser.js";
+import { UserRole, type IUserDocument, type IUserModel } from "../../interfaces/IUser.js";
 
 const SALT_ROUNDS = 10;
 
@@ -27,6 +27,12 @@ const userSchema = new Schema<IUserDocument>(
       minlength: 6,
       select: false, // Hide password in queries by default
     },
+    role:{
+      type:String,
+      enum:Object.values(UserRole),
+      default:UserRole.CUSTOMER,
+      required:true,
+    }
   },
   {
     timestamps: true,

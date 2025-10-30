@@ -1,27 +1,8 @@
 import { RootState } from "@/store/store";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { setCredentials } from "./authSlice";
+import {AuthResponse, LoginPayload, SignupPayload} from "../../types/auth"
 
-// 🧩 Types
-interface SignupPayload {
-  name: string;
-  email: string;
-  password: string;
-}
-
-interface LoginPayload {
-  email: string;
-  password: string;
-}
-
-interface AuthResponse {
-  token: string;
-  user: {
-    _id: string;
-    name: string;
-    email: string;
-  };
-}
 
 // 🌍 Base Query setup (handles API base URL + token injection)
 const baseQuery = fetchBaseQuery({

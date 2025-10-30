@@ -54,6 +54,7 @@ export class AuthServices {
       name: record.name,
       email: data.email,
       password: record.password,
+      
     });
 
     await redisClient.del(redisKey);

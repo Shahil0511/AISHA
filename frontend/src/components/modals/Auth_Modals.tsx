@@ -21,6 +21,7 @@ import {
 } from "@/features/auth/authApi";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "@/features/auth/authSlice";
+import { useRouter } from "next/navigation";
 
 interface AuthModalsProps {
   isLoginOpen: boolean;
@@ -52,6 +53,8 @@ export function AuthModals({
 
   const dispatch = useDispatch();
 
+  const router = useRouter();
+
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (!canResend && currentStep === "otp") {
@@ -73,6 +76,11 @@ export function AuthModals({
     try {
       const result = await login(data).unwrap();
       dispatch(setCredentials({ user: result.user, token: result.token }));
+      if (result.user.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/");
+      }
       setIsLoginOpen(false);
       loginForm.reset();
     } catch (err: any) {
