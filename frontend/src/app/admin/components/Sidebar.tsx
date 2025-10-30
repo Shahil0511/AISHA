@@ -22,6 +22,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { logout } from "@/features/auth/authSlice";
 
 interface SidebarItem {
   name: string;
@@ -213,8 +216,10 @@ function SidebarLink({
 }
 
 export default function Sidebar() {
+  const { user } = useSelector((state: RootState) => state.auth);
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const dispatch = useDispatch();
 
   const isActive = (item: SidebarItem): boolean => {
     if (item.path === pathname) return true;
@@ -222,6 +227,10 @@ export default function Sidebar() {
       return item.children.some((child) => isActive(child));
     }
     return false;
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
   };
 
   return (
@@ -254,7 +263,7 @@ export default function Sidebar() {
       </div>
 
       {/* User Info */}
-      {!isCollapsed && (
+      {!isCollapsed && user && (
         <div className="p-4 border-b">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
@@ -262,9 +271,9 @@ export default function Sidebar() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-gray-900 truncate">
-                John Anderson
+                {user.name || "User"}
               </p>
-              <p className="text-xs text-gray-500 truncate">Admin</p>
+              <p className="text-xs text-gray-500 truncate"> {user.role} </p>
             </div>
           </div>
         </div>
@@ -324,6 +333,7 @@ export default function Sidebar() {
 
         {/* Logout */}
         <button
+          onClick={handleLogout}
           className={cn(
             "flex items-center gap-3 w-full p-4 text-gray-700 hover:bg-gray-50 transition-colors border-t",
             isCollapsed && "justify-center"
@@ -335,13 +345,6 @@ export default function Sidebar() {
       </div>
 
       {/* Collapsed Tooltip */}
-      {isCollapsed && (
-        <div className="absolute left-full top-2 ml-2 hidden group-hover:block">
-          <div className="bg-gray-900 text-white text-sm rounded py-1 px-2 whitespace-nowrap">
-            Tooltip content
-          </div>
-        </div>
-      )}
     </aside>
   );
 }

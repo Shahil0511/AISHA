@@ -35,3 +35,21 @@ export interface AuthResponse {
     role:string;
   };
 }
+
+// Define what the "user" looks like
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
+   role: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// Define the state shape
+export interface AuthState {
+  user: User | null;
+  token: string | null;
+   isAuthenticated: boolean; 
+}
+

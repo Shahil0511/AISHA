@@ -1,7 +1,7 @@
 import { RootState } from "@/store/store";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { setCredentials } from "./authSlice";
-import {AuthResponse, LoginPayload, SignupPayload} from "../../types/auth"
+
+import {AuthResponse, LoginPayload, SignupPayload} from "../../types/auth.types"
 
 
 // 🌍 Base Query setup (handles API base URL + token injection)
@@ -12,8 +12,6 @@ const baseQuery = fetchBaseQuery({
     if (token) headers.set("authorization", `Bearer ${token}`);
     return headers;
   },
-  validateStatus: (response) =>
-    response.status === 200 || response.status === 201,
 });
 
 // ⚡ Create RTK Query API slice
@@ -29,19 +27,7 @@ export const authApi = createApi({
         url: "/login",
         method: "POST",
         body: data,
-      }),
-
-      // When login succeeds, store token + user globally
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        console.log("🚀 Login mutation triggered");
-        try {
-          const { data } = await queryFulfilled;
-          console.log("✅ Login success:", data);
-          dispatch(setCredentials(data)); // Save user/token in authSlice
-        } catch (error) {
-          console.error("❌ Login failed:", error);
-        }
-      },
+      })
     }),
 
     // 🔹 REQUEST OTP (signup step 1)
@@ -61,16 +47,7 @@ export const authApi = createApi({
         body: data,
       }),
 
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        console.log("🚀 Verify OTP triggered");
-        try {
-          const { data } = await queryFulfilled;
-          console.log("✅ Signup success:", data);
-          dispatch(setCredentials(data)); // Save user/token globally
-        } catch (error) {
-          console.error("❌ Verify OTP failed:", error);
-        }
-      },
+     
     }),
   }),
 });

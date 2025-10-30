@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Sidebar from "./components/Sidebar";
 import { Topbar } from "./components/Topbar";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 export default function AdminLayout({
   children,
@@ -11,16 +13,22 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const { user, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth
+  );
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
-
-    if (!token || role != "admin") {
-      router.push("/admin");
+    if (!isAuthenticated || user?.role !== "admin") {
+      router.push("/login");
     }
-  }, [router]);
-
+  }, [isAuthenticated, router, user]);
+  if (!isAuthenticated) {
+    return (
+      <div className="flex min-h-screen bg-gray-50 items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />

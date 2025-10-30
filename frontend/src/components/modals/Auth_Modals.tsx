@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Mail, Lock, User as UserIcon, Shield } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { LoginFormData, SignupFormData } from "@/types/auth";
+import { LoginFormData, SignupFormData } from "@/types/auth.types";
 import {
   useLoginMutation,
   useRequestOtpMutation,
@@ -103,6 +103,11 @@ export function AuthModals({
           otp: data.otp,
         }).unwrap();
         dispatch(setCredentials({ user: result.user, token: result.token }));
+        if (result.user.role === "admin") {
+          router.push("/admin");
+        } else {
+          router.push("/");
+        }
         setIsSignupOpen(false);
         signupForm.reset();
         setCurrentStep("credentials");

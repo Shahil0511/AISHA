@@ -40,7 +40,7 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
-  const dispach = useDispatch();
+  const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
   const isLoggedIn = Boolean(user);
 
@@ -55,7 +55,7 @@ export function Header() {
   };
 
   const handleLogout = () => {
-    dispach(logout());
+    dispatch(logout());
   };
 
   return (
@@ -153,26 +153,27 @@ export function Header() {
                 align="end"
                 className="w-56 bg-gray-900 border-gray-700 text-white"
               >
-                {isLoggedIn && (
-                  <>
-                    <div className="flex items-center gap-3 px-2 py-1.5">
-                      <img
-                        src="/logo.jpg"
-                        alt="Profile"
-                        className="h-8 w-8 rounded-full object-cover"
-                      />
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium">
-                          Your Account
-                        </span>
-                        <span className="text-xs text-gray-400">
-                          Manage settings
-                        </span>
+                {isLoggedIn &&
+                  user && ( // ✅ Add user check
+                    <>
+                      <div className="flex items-center gap-3 px-2 py-1.5">
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                          <span className="text-white text-sm font-medium">
+                            {user.name?.charAt(0).toUpperCase() || "U"}
+                          </span>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium">
+                            {user.name}
+                          </span>
+                          <span className="text-xs text-gray-400 capitalize">
+                            {user.role} {/* ✅ Show actual user role */}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <DropdownMenuSeparator className="bg-gray-700" />
-                  </>
-                )}
+                      <DropdownMenuSeparator className="bg-gray-700" />
+                    </>
+                  )}
 
                 <DropdownMenuItem className="flex items-center gap-2 text-gray-300 hover:!text-white hover:bg-gray-800 focus:bg-gray-800">
                   <User className="h-4 w-4 text-inherit" />
