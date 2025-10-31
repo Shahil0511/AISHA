@@ -12,6 +12,9 @@ import {
   UserCheck,
 } from "lucide-react";
 import { AddEntityModal, FormField } from "../components/Modal";
+import { useDispatch } from "react-redux";
+import { addUser } from "@/features/users/userSlice";
+import { useGetUsersQuery, useAddUserMutation } from "@/features/users/userApi";
 
 interface User {
   id: number;
@@ -27,6 +30,9 @@ export default function ManageUsersPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [addUserModal, setAddUserModal] = useState(false);
+  const dispatch = useDispatch();
+  const { data: usersData = [], isLoading } = useGetUsersQuery();
+  const [createUser, { isLoading: addingUser }] = useAddUserMutation();
 
   // Form configuration for users
   const userFormFields: FormField[] = [
@@ -77,56 +83,23 @@ export default function ManageUsersPage() {
     },
   ];
 
-  const handleAddUser = (userData: any) => {
-    const newUser: User = {
-      id: users.length + 1,
-      ...userData,
-    };
-    setUsers((prev) => [...prev, newUser]);
-    setAddUserModal(false);
-    console.log("Adding user:", newUser);
+  const handleAddUser = async (userData: any) => {
+    try {
+      const newUser = await createUser(userData).unwrap();
+      dispatch(addUser(newUser));
+      setAddUserModal(false);
+    } catch (error) {
+      console.error("Error adding user:", error);
+    }
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setUsers([
-        {
-          id: 1,
-          name: "John Doe",
-          email: "john@example.com",
-          role: "Admin",
-          department: "",
-          status: "Active",
-        },
-        {
-          id: 2,
-          name: "Sarah Smith",
-          email: "sarah@example.com",
-          role: "Editor",
-          department: "",
-          status: "Active",
-        },
-        {
-          id: 3,
-          name: "Mike Johnson",
-          email: "mike@example.com",
-          role: "Viewer",
-          department: "",
-          status: "Suspended",
-        },
-      ]);
-      setLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const filteredUsers = users.filter(
+  const filteredUsers = usersData.filter(
     (u) =>
       u.name.toLowerCase().includes(search.toLowerCase()) ||
       u.email.toLowerCase().includes(search.toLowerCase())
   );
 
-  if (loading) {
+  if (isLoading) {
     return <div className="text-gray-600">Loading users...</div>;
   }
 

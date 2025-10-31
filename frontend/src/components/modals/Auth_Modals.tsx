@@ -46,7 +46,7 @@ export function AuthModals({
   const [requestOtp] = useRequestOtpMutation();
   const [verifyOtp] = useVerifyOtpMutation();
 
-  const [login, { isLoading: loginLoading }] = useLoginMutation();
+  const [login] = useLoginMutation();
 
   const [canResend, setCanResend] = useState(false);
   const [resendTimer, setResendTimer] = useState(25);
