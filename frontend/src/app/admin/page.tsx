@@ -10,6 +10,7 @@ import {
   ArrowUp,
   ArrowDown,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
 // Mock data - replace with actual API calls
@@ -58,6 +59,7 @@ const topProducts = [
 export default function AdminDashboard() {
   const [stats, setStats] = useState(mockStats);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     // Simulate API call
@@ -67,6 +69,10 @@ export default function AdminDashboard() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  const handleManageUserCLick = () => {
+    router.push("/admin/manage-users");
+  };
 
   const StatCard = ({
     title,
@@ -264,7 +270,10 @@ export default function AdminDashboard() {
             <Package className="mx-auto mb-2 text-blue-600" size={24} />
             <p className="text-sm font-medium text-gray-900">Add Product</p>
           </button>
-          <button className="p-4 border border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors text-center">
+          <button
+            onClick={handleManageUserCLick}
+            className="p-4 border border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors text-center"
+          >
             <Users className="mx-auto mb-2 text-green-600" size={24} />
             <p className="text-sm font-medium text-gray-900">Manage Users</p>
           </button>
